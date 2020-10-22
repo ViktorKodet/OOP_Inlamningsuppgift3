@@ -32,7 +32,7 @@ public class GameBoard extends JFrame {
     }
 
     public boolean checkWinCondition(){
-        for (int i = 0; i < tileList.size(); i++){
+        for (int i = 0; i < tileList.size() - 1; i++){
             if (!tileList.get(i).getValue().equalsIgnoreCase("" + (i + 1))){
                 return false;
             }
