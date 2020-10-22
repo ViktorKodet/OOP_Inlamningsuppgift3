@@ -33,7 +33,7 @@ public class GameBoard extends JFrame {
 
     public List<String> generateValues() {
         List<String> tempList = new ArrayList<>();
-        for (int i = 0; i < n * n; i++){
+        for (int i = 0; i < n * n; i++) {
             tempList.add("" + i);
         }
         if (test) {
@@ -43,9 +43,9 @@ public class GameBoard extends JFrame {
         return tempList;
     }
 
-    public void shuffleValues(){
+    public void shuffleValues() {
         List<String> shuffledValues = generateValues();
-        for (int i = 0; i < tileList.size(); i++){
+        for (int i = 0; i < tileList.size(); i++) {
             tileList.get(i).changeValue(shuffledValues.get(i));
         }
     }
@@ -76,7 +76,7 @@ public class GameBoard extends JFrame {
     ActionListener l = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == shuffleButton){
+            if (e.getSource() == shuffleButton) {
                 shuffleValues();
                 label.setText("Tiles shuffled.");
             } else {
@@ -97,11 +97,11 @@ public class GameBoard extends JFrame {
         generateBoard();
     }
 
-    public boolean isAdjacent(Tile pressed, Tile blank){
+    public boolean isAdjacent(Tile pressed, Tile blank) {
         if (blank.getRow() == pressed.getRow() + 1 && blank.getCol() == pressed.getCol()
                 || blank.getRow() == pressed.getRow() - 1 && blank.getCol() == pressed.getCol()
                 || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() + 1
-                || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() - 1){
+                || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() - 1) {
             return true;
         } else {
             return false;
@@ -111,14 +111,13 @@ public class GameBoard extends JFrame {
     //TODO cleanup
     public void checkAdjacency(Tile pressed) {
         Tile blank = getBlankTile();
-        if (isAdjacent(pressed, blank)){
+        if (isAdjacent(pressed, blank)) {
             String blankVal = blank.getValue();
             String pressedVal = pressed.getValue();
             blank.changeValue(pressedVal);
             pressed.changeValue(blankVal);
             label.setText("Tiles swapped.");
-        }
-        else {
+        } else {
             label.setText("Selected tile not adjacent to blank tile.");
         }
     }
