@@ -14,21 +14,21 @@ public class Tile {
     private JButton button;
     private String value;
 
-    Tile(int row, int col, String value){
+    Tile(int row, int col, String value, ActionListener l){
         setRow(row);
         setCol(col);
         setValue(value);
-        setButton(new JButton(value));
+        setButton(new JButton(setProperText()));
         button.addActionListener(l);
     }
 
-    ActionListener l = new ActionListener(){
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == button);
-            button.setText("" + row + ", " + col);
-        }
-    };
+//    ActionListener l = new ActionListener(){
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            if (e.getSource() == button);
+//            button.setText("" + row + ", " + col);
+//        }
+//    };
 
     public int getRow() {
         return row;
@@ -60,5 +60,23 @@ public class Tile {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String setProperText(){
+        if(getValue().equalsIgnoreCase("0")){
+            return "";
+        }
+        else{
+            return getValue();
+        }
+    }
+
+    public void changeValue(String value) {
+        this.value = value;
+        if (value.equalsIgnoreCase("0")){
+            getButton().setText("");
+        } else {
+            getButton().setText(value);
+        }
     }
 }
