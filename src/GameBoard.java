@@ -13,6 +13,7 @@ public class GameBoard extends JFrame {
 
     List<Tile> tileList = new ArrayList<>();
     int n;
+    List<String> valueList = new ArrayList<>();
 
     public List<Tile> generateTiles(int n){
         int input = n;
