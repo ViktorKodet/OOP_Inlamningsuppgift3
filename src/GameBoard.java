@@ -1,6 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,31 +15,56 @@ import java.util.List;
 public class GameBoard extends JFrame {
 
     List<Tile> tileList = new ArrayList<>();
-    int n;
     List<String> valueList = new ArrayList<>();
+    int n;
+    JLabel label = new JLabel(" ");
+    boolean test;
+    JButton shuffleButton = new JButton("Shuffle");
 
-    public List<Tile> generateTiles(int n){
-        int input = n;
+    public List<Tile> generateTiles() {
         List<Tile> tempList = new ArrayList<>();
-        for (int i = 0; i < input * input; i++) {
-            int row = i / input;
-            int col = i % input;
-            tempList.add(new Tile(row, col, "" + i));
+        for (int i = 0; i < n * n; i++) {
+            int row = i / n;
+            int col = i % n;
+            tempList.add(new Tile(row, col, valueList.get(i), l));
         }
         return tempList;
     }
 
-    public void generateBoard(int n){
+    public List<String> generateValues() {
+        List<String> tempList = new ArrayList<>();
+        for (int i = 0; i < n * n; i++) {
+            tempList.add("" + i);
+        }
+        if (test) {
+            return tempList;
+        }
+        Collections.shuffle(tempList);
+        return tempList;
+    }
+
+    public void shuffleValues() {
+        List<String> shuffledValues = generateValues();
+        for (int i = 0; i < tileList.size(); i++) {
+            tileList.get(i).changeValue(shuffledValues.get(i));
+        }
+    }
+
+    public void generateBoard() {
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
-        JLabel label = new JLabel(" ");
+        JPanel p3 = new JPanel();
+
         setLayout(new BorderLayout());
         add(p1, BorderLayout.NORTH);
         add(p2, BorderLayout.CENTER);
+        add(p3, BorderLayout.SOUTH);
+        p3.add(shuffleButton);
+        shuffleButton.addActionListener(l);
         p1.add(label);
         p2.setLayout(new GridLayout(n, n));
 
-        for (int i = 0; i < tileList.size(); i++){
+        for (int i = 0; i < tileList.size(); i++) {
             p2.add(tileList.get(i).getButton());
         }
         setVisible(true);
@@ -45,14 +73,62 @@ public class GameBoard extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    GameBoard(int n){
+    ActionListener l = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == shuffleButton) {
+                shuffleValues();
+                label.setText("Tiles shuffled.");
+            } else {
+                for (Tile t : getTileList()) {
+                    if (t.getButton() == e.getSource()) {
+                        checkAdjacency(t);
+                    }
+                }
+            }
+        }
+    };
+
+    GameBoard(int n, boolean test) {
+        this.test = test;
         this.n = n;
-        tileList = generateTiles(n);
-        generateBoard(n);
+        valueList = generateValues();
+        tileList = generateTiles();
+        generateBoard();
     }
 
-    public void checkAdjacency(){
+    public boolean isAdjacent(Tile pressed, Tile blank) {
+        if (blank.getRow() == pressed.getRow() + 1 && blank.getCol() == pressed.getCol()
+                || blank.getRow() == pressed.getRow() - 1 && blank.getCol() == pressed.getCol()
+                || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() + 1
+                || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() - 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    //TODO cleanup
+    public void checkAdjacency(Tile pressed) {
+        Tile blank = getBlankTile();
+        if (isAdjacent(pressed, blank)) {
+            String blankVal = blank.getValue();
+            String pressedVal = pressed.getValue();
+            blank.changeValue(pressedVal);
+            pressed.changeValue(blankVal);
+            label.setText("Tiles swapped.");
+        } else {
+            label.setText("Selected tile not adjacent to blank tile.");
+        }
+    }
+
+    public Tile getBlankTile() {
+        for (Tile t : getTileList()) {
+            if (t.getValue().equalsIgnoreCase("0")) {
+                return t;
+            }
+        }
+        return null;
     }
 
     public List<Tile> getTileList() {
