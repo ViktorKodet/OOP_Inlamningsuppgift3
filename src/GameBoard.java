@@ -19,6 +19,7 @@ public class GameBoard extends JFrame {
     int n;
     JLabel label = new JLabel(" ");
     boolean test;
+    JButton shuffleButton = new JButton("Shuffle");
 
     public List<Tile> generateTiles() {
         List<Tile> tempList = new ArrayList<>();
@@ -42,13 +43,24 @@ public class GameBoard extends JFrame {
         return tempList;
     }
 
+    public void shuffleValues(){
+        List<String> shuffledValues = generateValues();
+        for (int i = 0; i < tileList.size(); i++){
+            tileList.get(i).changeValue(shuffledValues.get(i));
+        }
+    }
+
     public void generateBoard() {
         JPanel p1 = new JPanel();
         JPanel p2 = new JPanel();
+        JPanel p3 = new JPanel();
 
         setLayout(new BorderLayout());
         add(p1, BorderLayout.NORTH);
         add(p2, BorderLayout.CENTER);
+        add(p3, BorderLayout.SOUTH);
+        p3.add(shuffleButton);
+        shuffleButton.addActionListener(l);
         p1.add(label);
         p2.setLayout(new GridLayout(n, n));
 
@@ -64,9 +76,14 @@ public class GameBoard extends JFrame {
     ActionListener l = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (Tile t : getTileList()) {
-                if (t.getButton() == e.getSource()) {
-                    checkAdjacency(t);
+            if (e.getSource() == shuffleButton){
+                shuffleValues();
+                label.setText("Tiles shuffled.");
+            } else {
+                for (Tile t : getTileList()) {
+                    if (t.getButton() == e.getSource()) {
+                        checkAdjacency(t);
+                    }
                 }
             }
         }
@@ -91,6 +108,7 @@ public class GameBoard extends JFrame {
         }
     }
 
+    //TODO cleanup
     public void checkAdjacency(Tile pressed) {
         Tile blank = getBlankTile();
         if (isAdjacent(pressed, blank)){
