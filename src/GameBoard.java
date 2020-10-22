@@ -19,7 +19,7 @@ public class GameBoard extends JFrame {
     int n;
     JLabel label = new JLabel(" ");
     boolean test;
-    JButton shuffleButton = new JButton("Shuffle");
+    JButton shuffleButton = new JButton("New game");
 
     public List<Tile> generateTiles() {
         List<Tile> tempList = new ArrayList<>();
@@ -31,11 +31,22 @@ public class GameBoard extends JFrame {
         return tempList;
     }
 
+    public boolean checkWinCondition(){
+        for (int i = 0; i < tileList.size(); i++){
+            if (!tileList.get(i).getValue().equalsIgnoreCase("" + (i + 1))){
+                return false;
+            }
+        } return true;
+    }
+
     public List<String> generateValues() {
         List<String> tempList = new ArrayList<>();
         for (int i = 0; i < n * n; i++) {
             tempList.add("" + i);
         }
+        String s = tempList.get(0);
+        tempList.add(s);
+        tempList.remove(0);
         if (test) {
             return tempList;
         }
@@ -117,6 +128,9 @@ public class GameBoard extends JFrame {
             blank.changeValue(pressedVal);
             pressed.changeValue(blankVal);
             label.setText("Tiles swapped.");
+            if (checkWinCondition()){
+                System.out.println("win");
+            }
         } else {
             label.setText("Selected tile not adjacent to blank tile.");
         }
