@@ -39,7 +39,41 @@ public class GameBoard extends JFrame {
         } return true;
     }
 
-    public List<String> generateValues() {
+    class WinWindow extends JFrame{
+        JPanel winPanel1 = new JPanel();
+        JPanel winPanel2 = new JPanel();
+        JLabel winText = new JLabel("YOU WIN!");
+        Font  f2  = new Font(Font.SANS_SERIF,  Font.BOLD, 50);
+        JButton winButton = new JButton("New game");
+
+
+
+        WinWindow(){
+            winText.setFont(f2);
+            setLayout(new BorderLayout());
+            add(winPanel1, BorderLayout.CENTER);
+            add(winPanel2, BorderLayout.SOUTH);
+            winPanel1.add(winText);
+            winPanel2.add(winButton);
+            winButton.addActionListener(l2);
+            setLocationRelativeTo(null);
+
+            setVisible(true);
+            setDefaultCloseOperation(EXIT_ON_CLOSE);
+            pack();
+        }
+
+        ActionListener l2 = new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                shuffleValues();
+                dispose();
+            }
+        };
+    }
+
+    public List<String> generateValues(Boolean test) {
         List<String> tempList = new ArrayList<>();
         for (int i = 0; i < n * n; i++) {
             tempList.add("" + i);
@@ -55,7 +89,7 @@ public class GameBoard extends JFrame {
     }
 
     public void shuffleValues() {
-        List<String> shuffledValues = generateValues();
+        List<String> shuffledValues = generateValues(false);
         for (int i = 0; i < tileList.size(); i++) {
             tileList.get(i).changeValue(shuffledValues.get(i));
         }
@@ -103,7 +137,7 @@ public class GameBoard extends JFrame {
     GameBoard(int n, boolean test) {
         this.test = test;
         this.n = n;
-        valueList = generateValues();
+        valueList = generateValues(test);
         tileList = generateTiles();
         generateBoard();
     }
@@ -130,6 +164,7 @@ public class GameBoard extends JFrame {
             label.setText("Tiles swapped.");
             if (checkWinCondition()){
                 System.out.println("win");
+                WinWindow win = new WinWindow();
             }
         } else {
             label.setText("Selected tile not adjacent to blank tile.");
