@@ -61,6 +61,7 @@ public class GameBoard extends JFrame {
             setVisible(true);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
             pack();
+            //isAlwaysOnTop();
         }
 
         ActionListener l2 = new ActionListener(){
@@ -68,6 +69,7 @@ public class GameBoard extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 shuffleValues();
+                GameBoard.this.setEnabled(true);
                 dispose();
             }
         };
@@ -157,18 +159,22 @@ public class GameBoard extends JFrame {
     public void checkAdjacency(Tile pressed) {
         Tile blank = getBlankTile();
         if (isAdjacent(pressed, blank)) {
-            String blankVal = blank.getValue();
-            String pressedVal = pressed.getValue();
-            blank.changeValue(pressedVal);
-            pressed.changeValue(blankVal);
-            label.setText("Tiles swapped.");
+            swapValues(pressed, blank);
             if (checkWinCondition()){
-                System.out.println("win");
+                GameBoard.this.setEnabled(false);
                 WinWindow win = new WinWindow();
             }
         } else {
             label.setText("Selected tile not adjacent to blank tile.");
         }
+    }
+
+    private void swapValues(Tile pressed, Tile blank) {
+        String blankVal = blank.getValue();
+        String pressedVal = pressed.getValue();
+        blank.changeValue(pressedVal);
+        pressed.changeValue(blankVal);
+        label.setText("Tiles swapped.");
     }
 
     public Tile getBlankTile() {
