@@ -21,42 +21,68 @@ public class GameBoard extends JFrame {
     boolean test;
     JButton shuffleButton = new JButton("New game");
 
+    ActionListener listener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == shuffleButton) {
+                shuffleValues();
+                label.setText("Tiles shuffled.");
+            } else {
+                for (Tile t : getTileList()) {
+                    if (t.getButton() == e.getSource()) {
+                        if (isSwappable(t)) {
+                            swapValues(t, getBlankTile());
+                            if (checkWinCondition()) {
+                                GameBoard.this.setEnabled(false);
+                                WinWindow win = new WinWindow();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     public List<Tile> generateTiles() {
         List<Tile> tempList = new ArrayList<>();
         for (int i = 0; i < n * n; i++) {
             int row = i / n;
             int col = i % n;
-            tempList.add(new Tile(row, col, valueList.get(i), l));
+            tempList.add(new Tile(row, col, valueList.get(i), listener));
         }
         return tempList;
     }
 
-    public boolean checkWinCondition(){
-        for (int i = 0; i < tileList.size() - 1; i++){
-            if (!tileList.get(i).getValue().equalsIgnoreCase("" + (i + 1))){
+    public boolean checkWinCondition() {
+        for (int i = 0; i < tileList.size() - 1; i++) {
+            if (!tileList.get(i).getValue().equalsIgnoreCase("" + (i + 1))) {
                 return false;
             }
-        } return true;
+        }
+        return true;
     }
 
-    class WinWindow extends JFrame{
+    class WinWindow extends JFrame {
         JPanel winPanel1 = new JPanel();
         JPanel winPanel2 = new JPanel();
         JLabel winText = new JLabel("YOU WIN!");
-        Font  f2  = new Font(Font.SANS_SERIF,  Font.BOLD, 50);
+        Font f2 = new Font(Font.SANS_SERIF, Font.BOLD, 50);
         JButton winButton = new JButton("New game");
+        JButton exitButton = new JButton("Exit");
 
 
-
-        WinWindow(){
+        WinWindow() {
             winText.setFont(f2);
             setLayout(new BorderLayout());
             add(winPanel1, BorderLayout.CENTER);
             add(winPanel2, BorderLayout.SOUTH);
             winPanel1.add(winText);
             winPanel2.add(winButton);
+            winPanel2.add(exitButton);
             winButton.addActionListener(l2);
-            setLocationRelativeTo(null);
+            exitButton.addActionListener(l2);
+            setLocationRelativeTo(GameBoard.this);
+
 
             setVisible(true);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -64,13 +90,17 @@ public class GameBoard extends JFrame {
             //isAlwaysOnTop();
         }
 
-        ActionListener l2 = new ActionListener(){
+        ActionListener l2 = new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                shuffleValues();
-                GameBoard.this.setEnabled(true);
-                dispose();
+                if (e.getSource() == winButton) {
+                    shuffleValues();
+                    GameBoard.this.setEnabled(true);
+                    dispose();
+                } else if (e.getSource() == exitButton) {
+                    System.exit(0);
+                }
             }
         };
     }
@@ -107,7 +137,7 @@ public class GameBoard extends JFrame {
         add(p2, BorderLayout.CENTER);
         add(p3, BorderLayout.SOUTH);
         p3.add(shuffleButton);
-        shuffleButton.addActionListener(l);
+        shuffleButton.addActionListener(listener);
         p1.add(label);
         p2.setLayout(new GridLayout(n, n));
 
@@ -120,29 +150,6 @@ public class GameBoard extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    ActionListener l = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == shuffleButton) {
-                shuffleValues();
-                label.setText("Tiles shuffled.");
-            } else {
-                for (Tile t : getTileList()) {
-                    if (t.getButton() == e.getSource()) {
-                        checkAdjacency(t);
-                    }
-                }
-            }
-        }
-    };
-
-    GameBoard(int n, boolean test) {
-        this.test = test;
-        this.n = n;
-        valueList = generateValues(test);
-        tileList = generateTiles();
-        generateBoard();
-    }
 
     public boolean isAdjacent(Tile pressed, Tile blank) {
         if (blank.getRow() == pressed.getRow() + 1 && blank.getCol() == pressed.getCol()
@@ -155,17 +162,17 @@ public class GameBoard extends JFrame {
         }
     }
 
-    //TODO cleanup
-    public void checkAdjacency(Tile pressed) {
+    public boolean isSwappable(Tile pressed) {
         Tile blank = getBlankTile();
-        if (isAdjacent(pressed, blank)) {
-            swapValues(pressed, blank);
-            if (checkWinCondition()){
-                GameBoard.this.setEnabled(false);
-                WinWindow win = new WinWindow();
-            }
+        if (pressed == blank) {
+            label.setText("Pressing the blank tile does nothing.");
+            return false;
+        } else if (isAdjacent(pressed, blank)) {
+            return true;
+
         } else {
             label.setText("Selected tile not adjacent to blank tile.");
+            return false;
         }
     }
 
@@ -188,5 +195,13 @@ public class GameBoard extends JFrame {
 
     public List<Tile> getTileList() {
         return tileList;
+    }
+
+    GameBoard(int n, boolean test) {
+        this.test = test;
+        this.n = n;
+        valueList = generateValues(test);
+        tileList = generateTiles();
+        generateBoard();
     }
 }
