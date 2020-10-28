@@ -53,6 +53,21 @@ public class GameBoard extends JFrame {
         return tempList;
     }
 
+    public List<String> generateValues(Boolean test) {
+        List<String> tempList = new ArrayList<>();
+        for (int i = 0; i < n * n; i++) {
+            tempList.add("" + i);
+        }
+        String s = tempList.get(0);
+        tempList.add(s);
+        tempList.remove(0);
+        if (test) {
+            return tempList;
+        }
+        Collections.shuffle(tempList);
+        return tempList;
+    }
+
     public boolean checkWinCondition() {
         for (int i = 0; i < tileList.size() - 1; i++) {
             if (!tileList.get(i).getValue().equalsIgnoreCase("" + (i + 1))) {
@@ -61,13 +76,13 @@ public class GameBoard extends JFrame {
         }
         return true;
     }
-
     class WinWindow extends JFrame {
         JPanel winPanel1 = new JPanel();
         JPanel winPanel2 = new JPanel();
         JLabel winText = new JLabel("YOU WIN!");
         Font f2 = new Font(Font.SANS_SERIF, Font.BOLD, 50);
         JButton winButton = new JButton("New game");
+
         JButton exitButton = new JButton("Exit");
 
 
@@ -89,7 +104,6 @@ public class GameBoard extends JFrame {
             pack();
             //isAlwaysOnTop();
         }
-
         ActionListener l2 = new ActionListener() {
 
             @Override
@@ -103,21 +117,7 @@ public class GameBoard extends JFrame {
                 }
             }
         };
-    }
 
-    public List<String> generateValues(Boolean test) {
-        List<String> tempList = new ArrayList<>();
-        for (int i = 0; i < n * n; i++) {
-            tempList.add("" + i);
-        }
-        String s = tempList.get(0);
-        tempList.add(s);
-        tempList.remove(0);
-        if (test) {
-            return tempList;
-        }
-        Collections.shuffle(tempList);
-        return tempList;
     }
 
     public void shuffleValues() {
@@ -152,14 +152,10 @@ public class GameBoard extends JFrame {
 
 
     public boolean isAdjacent(Tile pressed, Tile blank) {
-        if (blank.getRow() == pressed.getRow() + 1 && blank.getCol() == pressed.getCol()
+        return blank.getRow() == pressed.getRow() + 1 && blank.getCol() == pressed.getCol()
                 || blank.getRow() == pressed.getRow() - 1 && blank.getCol() == pressed.getCol()
                 || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() + 1
-                || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() - 1) {
-            return true;
-        } else {
-            return false;
-        }
+                || blank.getRow() == pressed.getRow() && blank.getCol() == pressed.getCol() - 1;
     }
 
     public boolean isSwappable(Tile pressed) {

@@ -22,6 +22,19 @@ public class Tile {
     }
 
 
+    private String decideDisplayText() {
+        if (getValue().equalsIgnoreCase("0")) {
+            return "";
+        } else {
+            return getValue();
+        }
+    }
+
+    public void changeValue(String value) {
+        this.value = value;
+        getButton().setText(decideDisplayText());
+    }
+
     public int getRow() {
         return row;
     }
@@ -52,18 +65,5 @@ public class Tile {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    private String decideDisplayText() {
-        if (getValue().equalsIgnoreCase("0")) {
-            return "";
-        } else {
-            return getValue();
-        }
-    }
-
-    public void changeValue(String value) {
-        this.value = value;
-        getButton().setText(decideDisplayText());
     }
 }
